@@ -1,0 +1,75 @@
+---
+  - name: Insatall and configure Azure-CLI
+    hosts: localhost
+    gather_facts: yes
+    become: no
+    vars:
+      keyring_dest: "/usr/share/keyrings/microsoft.gpg"
+      bashrc: "{{ ansible_env.HOME }}/.bashrc"
+      src_az_cli: "{{ ansible_env.PWD }}/source_az_cli.txt"
+
+    tasks:
+      - name: Insatall required pacages
+        apt:
+          pkg:
+            - ca-certificates
+            - curl
+            - apt-transport-https
+            - lsb-release
+            - gnupg
+          state: latest
+          update_cache: yes
+        become: yes
+
+      - name: Download the signed key to a new keyring
+        get_url:
+          url: https://packages.microsoft.com/keys/microsoft.asc
+          dest: "{{ keyring_dest }}"
+        become: yes
+
+      - name: --dearmor old_key_format to new one
+        shell: cat "{{ keyring_dest }}" | gpg --dearmor | tee "{{ keyring_dest }}"
+        args:
+          executable: /bin/bash
+        become: yes
+
+      - name: Add the Azure CLI software repository
+        shell: |
+          echo "deb [arch=$(dpkg --print-architecture) signed-by={{ keyring_dest }}] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | \
+          tee /etc/apt/sources.list.d/azure-cli.list 
+        args:
+          executable: /bin/bash
+        become: yes
+
+      - name: Install Azure-CLI
+        apt:
+          pkg: azure-cli
+          state: latest
+          update_cache: yes
+        become: yes
+
+      # - name: Load AZ_AUTOCOMPLITE 
+      #   shell: |
+      #     if ! cat {{ bashrc }} | grep -gE "(\. \/etc\/bash_completion\.d\/azure-cli$)" ; then
+      #       cat {{ src_az_cli }} >> {{ bashrc }}
+      #     fi
+      #     source "{{ ansible_env.HOME }}/.profile"
+      #   args:
+      #     executable: /bin/bash
+
+      # - name: Check if src_az_cli is added to .bashrc
+      #   shell: cat {{ bashrc }} | grep -qE "(. /etc/bash_completion.d/azure-cli$)" ; echo $?
+      #   args:
+      #     executable: /bin/bash
+      #   register: shell_out
+
+      # - name: Display {{shell_out}}
+      #   debug:
+      #     msg: "{{ shell_out.stdout }}"
+
+      # - name: Add src_az_cli to .bashrc
+      #   shell: cat {{ src_az_cli }} >> {{ bashrc }} && source {{ ansible_env.HOME }}/.profile
+      #   args:
+      #     executable: /bin/bash
+      #   when: shell_out.stdout == '1'
+# ```
