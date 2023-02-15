@@ -48,28 +48,9 @@
           update_cache: yes
         become: yes
 
-      # - name: Load AZ_AUTOCOMPLITE 
-      #   shell: |
-      #     if ! cat {{ bashrc }} | grep -gE "(\. \/etc\/bash_completion\.d\/azure-cli$)" ; then
-      #       cat {{ src_az_cli }} >> {{ bashrc }}
-      #     fi
-      #     source "{{ ansible_env.HOME }}/.profile"
-      #   args:
-      #     executable: /bin/bash
+      - name: Enable Azure CLI autocompletion to this terminal session
+        shell: source {{ ansible_env.HOME }}/.profile
+        args:
+          executable: /bin/bash
 
-      # - name: Check if src_az_cli is added to .bashrc
-      #   shell: cat {{ bashrc }} | grep -qE "(. /etc/bash_completion.d/azure-cli$)" ; echo $?
-      #   args:
-      #     executable: /bin/bash
-      #   register: shell_out
-
-      # - name: Display {{shell_out}}
-      #   debug:
-      #     msg: "{{ shell_out.stdout }}"
-
-      # - name: Add src_az_cli to .bashrc
-      #   shell: cat {{ src_az_cli }} >> {{ bashrc }} && source {{ ansible_env.HOME }}/.profile
-      #   args:
-      #     executable: /bin/bash
-      #   when: shell_out.stdout == '1'
 # ```
