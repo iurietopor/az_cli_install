@@ -16,19 +16,25 @@ Verified on:
 1. `cd` into project directory.
 2. Execute:
 
-        `ansible-playbook azure_cli_install.yaml -K`
-        * `-K` - provide *sudo* password for ansible *privilege escalation*
+    ```bash
+    ansible-playbook azure_cli_install.yaml -K
+    ```
+    * `-K` - provide *sudo* password for ansible *privilege escalation*
 
 ### Install Ansible
 
 * Update repos list:
 
-        `sudo apt-get update`
+    ```bash
+    sudo apt-get update
+    ```
 
 * Install Ansible:
 
-        `sudo apt-get install ansible -y`
-        * `-y` - assume "yes" as answer to all prompts and run non-interactively
+    ```bash
+    sudo apt-get install ansible -y
+    ```
+    * `-y` - assume "yes" as answer to all prompts and run non-interactively
 
 
 ---
